@@ -1,0 +1,32 @@
+# Node modules
+node_modules/
+
+# Archivos de log
+*.log
+
+# Archivos de entorno (para evitar subir tus credenciales sensibles)
+.env
+
+# Directorios de caché
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dependencias de producción y builds de producción
+build/
+dist/
+
+# Archivos temporales generados por editores de texto
+.vscode/
+.idea/
+.DS_Store
+
+# Archivos de dependencias de paquetes (si usas Yarn)
+yarn.lock
+
+# Archivos de configuración de servicios
+*.pid
+*.seed
+
+# Archivos de base de datos temporales
+*.db
