@@ -1,17 +1,15 @@
 const express = require('express');
 const nodemailer = require('nodemailer');
-const bodyParser = require('body-parser');
 const cors = require('cors');
-require('dotenv').config();
+const dotenv = require('dotenv');
+
+dotenv.config();
 
 const app = express();
-const port = 5000; // Puedes usar otro puerto si lo deseas
-
-// Middleware
 app.use(cors());
-app.use(bodyParser.json());
+app.use(express.json());
 
-// Configurar el transporte de correo (usando Gmail como ejemplo)
+// Configurar el transporte de correo
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
@@ -22,27 +20,24 @@ const transporter = nodemailer.createTransport({
   debug: true,
 });
 
-// Ruta para recibir datos del formulario y enviar el correo
-app.post('/send-email', (req, res) => {
-  const { name, email, message } = req.body;
+// Ruta para enviar el correo
+app.post('/api/send-email', async (req, res) => {
+  try {
+    const { name, email, message } = req.body;
 
-  const mailOptions = {
-    from: email, // Remitente
-    to: process.env.GMAIL_USER, // Destinatario
-    subject: 'Nuevo mensaje de contacto', // Asunto
-    text: `Nombre: ${name}\nCorreo: ${email}\nMensaje: ${message}` // Contenido del mensaje
-  };
+    const mailOptions = {
+      from: email,
+      to: process.env.GMAIL_USER,
+      subject: 'Nuevo mensaje de contacto',
+      text: `Nombre: ${name}\nCorreo: ${email}\nMensaje: ${message}`
+    };
 
-  // Enviar el correo
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      return res.status(500).send('Error al enviar el correo: ' + error);
-    }
-    res.status(200).send('Correo enviado: ' + info.response);
-  });
+    const info = await transporter.sendMail(mailOptions);
+    res.status(200).json({ success: true, message: 'Correo enviado', info });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
 });
 
-// Iniciar el servidor
-app.listen(port, () => {
-  console.log(`Servidor escuchando en el puerto ${port}`);
-});
+// Exportar la función para Vercel
+module.exports = app;
